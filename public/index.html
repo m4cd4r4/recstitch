@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentTrace — Browser Action Recorder for AI Agents</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #0f0f0f;
+    --border: #1a1a1a;
+    --green: #00ff9f;
+    --green-dim: #003d25;
+    --text: #e5e5e5;
+    --muted: #525252;
+    --mono: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; }
+
+  header { max-width: 1040px; margin: 0 auto; padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .logo { font-family: var(--mono); font-size: 16px; color: var(--green); font-weight: 700; }
+  .gh-link { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.15s; }
+  .gh-link:hover { color: var(--text); }
+
+  .hero { max-width: 1040px; margin: 0 auto; padding: 80px 32px 60px; text-align: center; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; background: var(--green-dim); border: 1px solid #005c38; color: var(--green); font-size: 12px; font-family: var(--mono); padding: 4px 12px; border-radius: 100px; margin-bottom: 28px; }
+  h1 { font-size: clamp(30px, 5vw, 52px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 20px; }
+  h1 span { color: var(--green); }
+  .sub { font-size: 18px; color: var(--muted); max-width: 600px; margin: 0 auto 60px; }
+
+  .demo { max-width: 1040px; margin: 0 auto; padding: 0 32px 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .panel-header { background: #111; border-bottom: 1px solid var(--border); padding: 12px 16px; font-family: var(--mono); font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .panel-header .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: blink 1.2s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .panel-body { padding: 20px; font-family: var(--mono); font-size: 13px; line-height: 2; }
+  .action { display: flex; gap: 12px; align-items: baseline; }
+  .action-type { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em; flex-shrink: 0; }
+  .t-nav { background: #1e1b4b; color: #a5b4fc; }
+  .t-click { background: #0c1a3a; color: #60a5fa; }
+  .t-input { background: #1a0e00; color: #fbbf24; }
+  .action-text { color: var(--muted); font-size: 12px; }
+  .action-text strong { color: var(--text); }
+  .code-line { color: #6b7280; }
+  .code-line .fn { color: #93c5fd; }
+  .code-line .str { color: #86efac; }
+  .code-line .sel { color: var(--green); }
+
+  .why { max-width: 1040px; margin: 0 auto; padding: 0 32px 60px; }
+  .why h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .why p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--muted); font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-family: var(--mono); }
+  tr:last-child td { border-bottom: none; }
+  .high { color: var(--green); }
+  .low { color: #ef4444; }
+  .mid { color: #fbbf24; }
+
+  .formats { max-width: 1040px; margin: 0 auto; padding: 0 32px 60px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .fmt-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+  .fmt-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .fmt-card p { font-size: 13px; color: var(--muted); }
+  .fmt-tag { display: inline-block; font-family: var(--mono); font-size: 11px; background: var(--green-dim); color: var(--green); padding: 2px 8px; border-radius: 4px; margin-bottom: 10px; }
+
+  .cta { max-width: 1040px; margin: 0 auto; padding: 0 32px 80px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; transition: all 0.15s; }
+  .btn-primary { background: var(--green); color: #000; }
+  .btn-primary:hover { background: #00e88f; }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--muted); }
+
+  footer { border-top: 1px solid var(--border); padding: 24px 32px; text-align: center; font-size: 13px; color: var(--muted); }
+
+  @media (max-width: 700px) {
+    .demo { grid-template-columns: 1fr; }
+    .formats { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">agent-trace</div>
+  <a href="https://github.com/m4cd4r4/agent-trace" class="gh-link">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.745 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+    GitHub
+  </a>
+</header>
+
+<section class="hero">
+  <div class="badge">● Recording</div>
+  <h1>Record your browser actions.<br>Export an <span>AI agent</span>.</h1>
+  <p class="sub">AI-resilient automation with multi-strategy selectors that survive UI redesigns. Export to Playwright, Stagehand, or Browser Use.</p>
+</section>
+
+<section class="demo">
+  <div class="panel">
+    <div class="panel-header"><div class="dot"></div> Recording actions...</div>
+    <div class="panel-body">
+      <div class="action"><span class="action-type t-nav">NAV</span><span class="action-text">→ <strong>https://example.com</strong></span></div>
+      <div class="action"><span class="action-type t-click">CLICK</span><span class="action-text">text=<strong>"Sign In"</strong></span></div>
+      <div class="action"><span class="action-type t-input">INPUT</span><span class="action-text">placeholder=<strong>"Email"</strong> → user@example.com</span></div>
+      <div class="action"><span class="action-type t-click">CLICK</span><span class="action-text">aria-label=<strong>"Submit"</strong></span></div>
+      <div class="action"><span class="action-type t-click">CLICK</span><span class="action-text">text=<strong>"Dashboard"</strong></span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      Playwright TypeScript export
+    </div>
+    <div class="panel-body">
+      <div class="code-line"><span class="fn">await</span> page.<span class="fn">goto</span>(<span class="str">'https://example.com'</span>);</div>
+      <div class="code-line"><span class="fn">await</span> page.<span class="fn">locator</span>(<span class="sel">'text="Sign In"'</span>).<span class="fn">click</span>();</div>
+      <div class="code-line"><span class="fn">await</span> page.<span class="fn">locator</span>(<span class="sel">'[placeholder="Email"]'</span>)</div>
+      <div class="code-line">&nbsp;&nbsp;.<span class="fn">fill</span>(<span class="str">'user@example.com'</span>);</div>
+      <div class="code-line"><span class="fn">await</span> page.<span class="fn">locator</span>(<span class="sel">'[aria-label="Submit"]'</span>).<span class="fn">click</span>();</div>
+      <div class="code-line"><span class="fn">await</span> page.<span class="fn">locator</span>(<span class="sel">'text="Dashboard"'</span>).<span class="fn">click</span>();</div>
+    </div>
+  </div>
+</section>
+
+<section class="why">
+  <h2>Why not Playwright Codegen?</h2>
+  <p>Playwright's recorder outputs brittle CSS selectors that break when the UI changes. AgentTrace ranks selectors by resilience.</p>
+  <table>
+    <tr>
+      <th>Strategy</th>
+      <th>Example</th>
+      <th>Resilience</th>
+    </tr>
+    <tr>
+      <td>test-id</td>
+      <td>[data-testid="submit-btn"]</td>
+      <td class="high">Highest</td>
+    </tr>
+    <tr>
+      <td>text</td>
+      <td>text="Sign In"</td>
+      <td class="high">High</td>
+    </tr>
+    <tr>
+      <td>aria</td>
+      <td>[aria-label="Submit"]</td>
+      <td class="high">High</td>
+    </tr>
+    <tr>
+      <td>css</td>
+      <td>button.btn-primary.submit</td>
+      <td class="low">Low (brittle)</td>
+    </tr>
+  </table>
+</section>
+
+<section class="formats">
+  <div class="fmt-card">
+    <div class="fmt-tag">TypeScript</div>
+    <h3>Playwright</h3>
+    <p>Standard Playwright test format. Run with <code>npx playwright test</code>.</p>
+  </div>
+  <div class="fmt-card">
+    <div class="fmt-tag">TypeScript</div>
+    <h3>Stagehand</h3>
+    <p>Natural language actions via Browserbase. Uses <code>act()</code> and <code>extract()</code>.</p>
+  </div>
+  <div class="fmt-card">
+    <div class="fmt-tag">Python</div>
+    <h3>Browser Use</h3>
+    <p>LangChain-based browser agent. Runs with any OpenAI-compatible LLM.</p>
+  </div>
+</section>
+
+<section class="cta">
+  <a href="https://github.com/m4cd4r4/agent-trace" class="btn btn-primary">Install from GitHub</a>
+  <a href="https://github.com/m4cd4r4/agent-trace#readme" class="btn btn-ghost">Read the docs</a>
+</section>
+
+<footer>
+  agent-trace — MIT License · Built by <a href="https://github.com/m4cd4r4" style="color:var(--green);text-decoration:none;">m4cd4r4</a>
+</footer>
+
+</body>
+</html>
