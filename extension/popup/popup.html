@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentTrace</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <h1>AgentTrace</h1>
+    <span id="status" class="badge">Idle</span>
+  </header>
+
+  <div class="controls">
+    <button id="toggleBtn" class="btn btn-primary">Start Recording</button>
+    <button id="clearBtn" class="btn btn-secondary">Clear</button>
+  </div>
+
+  <div class="actions" id="actionList">
+    <div class="empty">No actions recorded yet.</div>
+  </div>
+
+  <div class="export-section">
+    <h2>Export As</h2>
+    <div class="export-buttons">
+      <button class="btn btn-export" data-format="playwright">Playwright</button>
+      <button class="btn btn-export" data-format="stagehand">Stagehand</button>
+      <button class="btn btn-export" data-format="browser-use">Browser Use</button>
+      <button class="btn btn-export" data-format="json">JSON</button>
+    </div>
+  </div>
+
+  <script type="module" src="popup.ts"></script>
+</body>
+</html>
