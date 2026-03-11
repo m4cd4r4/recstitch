@@ -1,5 +1,9 @@
 # AgentTrace
 
+**Live:** https://agent-trace-sage.vercel.app
+
+![AgentTrace landing page](docs/screenshot.png)
+
 Record your browser actions. Export an AI-resilient automation script.
 
 ## How It Works
