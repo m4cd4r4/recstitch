@@ -1,7 +1,7 @@
 {
-  "name": "agent-trace",
+  "name": "recstitch",
   "version": "0.1.0",
-  "description": "Record browser actions. Export AI-resilient automation scripts.",
+  "description": "Record browser actions. Export resilient automation scripts.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,12 +13,15 @@
     "playwright",
     "stagehand",
     "chrome-extension",
-    "ai-agent",
     "recorder",
     "web-scraping"
   ],
   "author": "Macdara O Murchu",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/m4cd4r4/recstitch"
+  },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.30",
     "@types/chrome": "^0.0.287",
