@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "AgentTrace",
+  "name": "RecStitch",
   "version": "0.1.0",
-  "description": "Record browser actions. Export AI-resilient automation scripts.",
+  "description": "Record browser actions. Export resilient automation scripts.",
   "permissions": ["activeTab", "storage", "tabs"],
   "action": {
     "default_popup": "extension/popup/popup.html",
