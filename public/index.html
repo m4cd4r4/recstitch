@@ -3,86 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RecStitch — Browser Action Recorder for AI Agents</title>
+<title>RecStitch &mdash; Record once. Automate resilient.</title>
 <style>
   :root {
-    --bg: #0a0a0a;
-    --surface: #0f0f0f;
-    --border: #1a1a1a;
-    --green: #00ff9f;
-    --green-dim: #003d25;
-    --text: #e5e5e5;
-    --muted: #525252;
-    --mono: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+    --bg:#0a0f0a; --surface:#0f150f; --surface2:#141a14;
+    --border:#1a241a; --border2:#243024;
+    --green:#10b981; --green-dim:#065f46; --green-bg:#031a10;
+    --green2:#4ade80; --teal:#2dd4bf;
+    --text:#e5e5e5; --muted:#737373; --muted2:#525252;
+    --red:#ef4444; --amber:#f59e0b; --blue:#60a5fa; --purple:#c084fc;
+    --mono:'SF Mono','Cascadia Code','Fira Code',monospace;
   }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; line-height:1.6; }
 
-  header { max-width: 1040px; margin: 0 auto; padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-  .logo { font-family: var(--mono); font-size: 16px; color: var(--green); font-weight: 700; }
-  .gh-link { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.15s; }
-  .gh-link:hover { color: var(--text); }
+  header { max-width:960px; margin:0 auto; padding:24px 32px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); }
+  .logo { font-family:var(--mono); font-size:16px; color:var(--green); font-weight:700; letter-spacing:-0.02em; display:flex; align-items:center; gap:8px; }
+  .rec-dot { width:8px; height:8px; border-radius:50%; background:var(--red); animation:pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+  .gh-link { display:flex; align-items:center; gap:8px; color:var(--muted); text-decoration:none; font-size:14px; transition:color 0.15s; }
+  .gh-link:hover { color:var(--text); }
 
-  .hero { max-width: 1040px; margin: 0 auto; padding: 80px 32px 60px; text-align: center; }
-  .badge { display: inline-flex; align-items: center; gap: 6px; background: var(--green-dim); border: 1px solid #005c38; color: var(--green); font-size: 12px; font-family: var(--mono); padding: 4px 12px; border-radius: 100px; margin-bottom: 28px; }
-  h1 { font-size: clamp(30px, 5vw, 52px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 20px; }
-  h1 span { color: var(--green); }
-  .sub { font-size: 18px; color: var(--muted); max-width: 600px; margin: 0 auto 60px; }
+  /* HERO */
+  .hero { max-width:960px; margin:0 auto; padding:80px 32px 60px; }
+  .badge { display:inline-flex; align-items:center; gap:6px; background:var(--green-bg); border:1px solid var(--green-dim); color:var(--green); font-size:12px; font-family:var(--mono); padding:4px 10px; border-radius:100px; margin-bottom:28px; }
+  h1 { font-size:clamp(32px,5vw,52px); font-weight:800; letter-spacing:-0.03em; line-height:1.1; margin-bottom:20px; }
+  h1 span { color:var(--green); }
+  .sub { font-size:18px; color:var(--muted); max-width:580px; margin-bottom:44px; }
+  .hero-cta { display:flex; gap:12px; flex-wrap:wrap; }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:12px 24px; border-radius:8px; font-size:14px; font-weight:600; text-decoration:none; transition:all 0.15s; }
+  .btn-primary { background:var(--green); color:#000; }
+  .btn-primary:hover { background:#34d399; }
+  .btn-ghost { background:transparent; color:var(--text); border:1px solid var(--border2); }
+  .btn-ghost:hover { border-color:var(--muted); }
 
-  .demo { max-width: 1040px; margin: 0 auto; padding: 0 32px 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-  .panel-header { background: #111; border-bottom: 1px solid var(--border); padding: 12px 16px; font-family: var(--mono); font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
-  .panel-header .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: blink 1.2s step-end infinite; }
-  @keyframes blink { 50% { opacity: 0; } }
-  .panel-body { padding: 20px; font-family: var(--mono); font-size: 13px; line-height: 2; }
-  .action { display: flex; gap: 12px; align-items: baseline; }
-  .action-type { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em; flex-shrink: 0; }
-  .t-nav { background: #1e1b4b; color: #a5b4fc; }
-  .t-click { background: #0c1a3a; color: #60a5fa; }
-  .t-input { background: #1a0e00; color: #fbbf24; }
-  .action-text { color: var(--muted); font-size: 12px; }
-  .action-text strong { color: var(--text); }
-  .code-line { color: #6b7280; }
-  .code-line .fn { color: #93c5fd; }
-  .code-line .str { color: #86efac; }
-  .code-line .sel { color: var(--green); }
+  /* PROBLEM/SOLUTION */
+  .problem-band { background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:32px; margin-bottom:60px; }
+  .problem-inner { max-width:960px; margin:0 auto; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:24px; }
+  @media(max-width:640px){ .problem-inner { grid-template-columns:1fr; } .vs-divider { display:none; } }
+  .problem-box { background:var(--surface2); border:1px solid var(--border2); border-radius:12px; padding:20px; }
+  .problem-box h3 { font-size:13px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:12px; }
+  .problem-box h3.bad { color:var(--red); }
+  .problem-box h3.good { color:var(--green); }
+  .sel-row { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--border); font-family:var(--mono); font-size:12px; }
+  .sel-row:last-child { border-bottom:none; }
+  .sel-label { color:var(--muted2); width:72px; flex-shrink:0; }
+  .sel-val { color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sel-badge { margin-left:auto; flex-shrink:0; font-size:10px; padding:1px 6px; border-radius:4px; font-weight:700; }
+  .sel-badge.high { background:rgba(16,185,129,0.15); color:var(--green2); }
+  .sel-badge.low { background:rgba(239,68,68,0.15); color:#f87171; }
+  .vs-divider { font-size:22px; color:var(--muted2); text-align:center; }
 
-  .why { max-width: 1040px; margin: 0 auto; padding: 0 32px 60px; }
-  .why h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-  .why p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--muted); font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
-  td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-family: var(--mono); }
-  tr:last-child td { border-bottom: none; }
-  .high { color: var(--green); }
-  .low { color: #ef4444; }
-  .mid { color: #fbbf24; }
+  /* DEMO TERMINAL */
+  .demo-wrap { max-width:960px; margin:0 auto; padding:0 32px 60px; }
+  .terminal { background:#060f06; border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .term-bar { background:#0f180f; padding:10px 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border); }
+  .dot { width:12px; height:12px; border-radius:50%; }
+  .dot-r { background:#ff5f57; } .dot-y { background:#febc2e; } .dot-g { background:#28c840; }
+  .term-title { font-family:var(--mono); font-size:11px; color:var(--muted2); margin-left:8px; }
+  .term-body { padding:24px; font-family:var(--mono); font-size:13px; line-height:1.8; }
+  .t-dim { color:var(--muted2); }
+  .t-green { color:var(--green2); }
+  .t-amber { color:var(--amber); }
+  .t-blue { color:var(--blue); }
+  .t-text { color:var(--text); }
+  .t-comment { color:var(--muted); font-style:italic; }
 
-  .formats { max-width: 1040px; margin: 0 auto; padding: 0 32px 60px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .fmt-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
-  .fmt-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-  .fmt-card p { font-size: 13px; color: var(--muted); }
-  .fmt-tag { display: inline-block; font-family: var(--mono); font-size: 11px; background: var(--green-dim); color: var(--green); padding: 2px 8px; border-radius: 4px; margin-bottom: 10px; }
+  /* EXPORTS */
+  .exports-wrap { max-width:960px; margin:0 auto; padding:0 32px 60px; }
+  .section-heading { font-size:22px; font-weight:700; margin-bottom:8px; }
+  .section-sub { color:var(--muted); font-size:14px; margin-bottom:28px; }
+  .export-tabs { display:flex; gap:4px; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:0; }
+  .tab { padding:8px 16px; font-size:13px; font-weight:600; cursor:pointer; border-radius:6px 6px 0 0; color:var(--muted); border:1px solid transparent; border-bottom:none; margin-bottom:-1px; transition:all 0.15s; }
+  .tab.active { color:var(--green); background:var(--surface); border-color:var(--border); border-bottom-color:var(--surface); }
+  .tab:hover:not(.active) { color:var(--text); }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; animation:fadeIn 0.2s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(4px);} to{opacity:1;transform:translateY(0);} }
+  .code-block { background:#060f06; border:1px solid var(--border); border-radius:0 10px 10px 10px; padding:24px; font-family:var(--mono); font-size:13px; line-height:1.8; overflow-x:auto; }
+  .kw { color:var(--purple); } .fn { color:var(--blue); } .str { color:var(--amber); }
+  .cm { color:var(--muted); font-style:italic; } .type { color:var(--teal); }
 
-  .cta { max-width: 1040px; margin: 0 auto; padding: 0 32px 80px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; transition: all 0.15s; }
-  .btn-primary { background: var(--green); color: #000; }
-  .btn-primary:hover { background: #00e88f; }
-  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
-  .btn-ghost:hover { border-color: var(--muted); }
+  /* FEATURES */
+  .features { max-width:960px; margin:0 auto; padding:0 32px 60px; display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; transition:border-color 0.2s; }
+  .card:hover { border-color:var(--green-dim); }
+  .card-icon { font-size:24px; margin-bottom:12px; }
+  .card h3 { font-size:15px; font-weight:600; margin-bottom:8px; }
+  .card p { font-size:13px; color:var(--muted); line-height:1.6; }
 
-  footer { border-top: 1px solid var(--border); padding: 24px 32px; text-align: center; font-size: 13px; color: var(--muted); }
+  /* INSTALL */
+  .install-wrap { max-width:960px; margin:0 auto; padding:0 32px 80px; }
+  .install-steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-top:24px; }
+  .step { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; position:relative; }
+  .step-num { font-family:var(--mono); font-size:11px; color:var(--green-dim); font-weight:700; margin-bottom:8px; }
+  .step h4 { font-size:14px; font-weight:600; margin-bottom:6px; }
+  .step p { font-size:13px; color:var(--muted); }
+  .step code { font-family:var(--mono); font-size:12px; color:var(--green); background:var(--green-bg); padding:2px 6px; border-radius:4px; }
 
-  @media (max-width: 700px) {
-    .demo { grid-template-columns: 1fr; }
-    .formats { grid-template-columns: 1fr; }
-  }
+  footer { border-top:1px solid var(--border); padding:24px 32px; text-align:center; font-size:13px; color:var(--muted); }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">recstitch</div>
+  <div class="logo">
+    <div class="rec-dot"></div>
+    RecStitch
+  </div>
   <a href="https://github.com/m4cd4r4/recstitch" class="gh-link">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.745 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
     GitHub
@@ -90,96 +118,122 @@
 </header>
 
 <section class="hero">
-  <div class="badge">● Recording</div>
-  <h1>Record your browser actions.<br>Export an <span>AI agent</span>.</h1>
-  <p class="sub">AI-resilient automation with multi-strategy selectors that survive UI redesigns. Export to Playwright, Stagehand, or Browser Use.</p>
+  <div class="badge">&#x25CF; Chrome Extension</div>
+  <h1>Record once.<br><span>Automate resilient.</span></h1>
+  <p class="sub">Record your browser actions and export scripts that survive UI redesigns. Multi-strategy selectors ranked by resilience &mdash; not brittle CSS that breaks on the next deploy.</p>
+  <div class="hero-cta">
+    <a href="https://github.com/m4cd4r4/recstitch" class="btn btn-primary">Get RecStitch</a>
+    <a href="https://github.com/m4cd4r4/recstitch#readme" class="btn btn-ghost">Read the docs</a>
+  </div>
 </section>
 
-<section class="demo">
-  <div class="panel">
-    <div class="panel-header"><div class="dot"></div> Recording actions...</div>
-    <div class="panel-body">
-      <div class="action"><span class="action-type t-nav">NAV</span><span class="action-text">→ <strong>https://example.com</strong></span></div>
-      <div class="action"><span class="action-type t-click">CLICK</span><span class="action-text">text=<strong>"Sign In"</strong></span></div>
-      <div class="action"><span class="action-type t-input">INPUT</span><span class="action-text">placeholder=<strong>"Email"</strong> → user@example.com</span></div>
-      <div class="action"><span class="action-type t-click">CLICK</span><span class="action-text">aria-label=<strong>"Submit"</strong></span></div>
-      <div class="action"><span class="action-type t-click">CLICK</span><span class="action-text">text=<strong>"Dashboard"</strong></span></div>
+<div class="problem-band">
+  <div class="problem-inner">
+    <div class="problem-box">
+      <h3 class="bad">&#x274C; Playwright Codegen</h3>
+      <div class="sel-row"><span class="sel-label">selector</span><span class="sel-val">.btn-primary &gt; span.label</span><span class="sel-badge low">Brittle</span></div>
+      <div class="sel-row"><span class="sel-label">selector</span><span class="sel-val">#app &gt; div:nth-child(3) &gt; button</span><span class="sel-badge low">Breaks</span></div>
+      <div class="sel-row" style="padding-top:10px;border:none;color:var(--muted);font-size:12px;">Breaks on every UI change</div>
+    </div>
+    <div class="vs-divider">&#x2192;</div>
+    <div class="problem-box">
+      <h3 class="good">&#x2714; RecStitch</h3>
+      <div class="sel-row"><span class="sel-label">test-id</span><span class="sel-val">[data-testid="submit"]</span><span class="sel-badge high">Highest</span></div>
+      <div class="sel-row"><span class="sel-label">text</span><span class="sel-val">text="Sign In"</span><span class="sel-badge high">High</span></div>
+      <div class="sel-row"><span class="sel-label">aria</span><span class="sel-val">[aria-label="Submit"]</span><span class="sel-badge high">High</span></div>
     </div>
   </div>
-  <div class="panel">
-    <div class="panel-header">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-      Playwright TypeScript export
+</div>
+
+<div class="demo-wrap">
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+      <span class="term-title">RecStitch &mdash; recording session</span>
     </div>
-    <div class="panel-body">
-      <div class="code-line"><span class="fn">await</span> page.<span class="fn">goto</span>(<span class="str">'https://example.com'</span>);</div>
-      <div class="code-line"><span class="fn">await</span> page.<span class="fn">locator</span>(<span class="sel">'text="Sign In"'</span>).<span class="fn">click</span>();</div>
-      <div class="code-line"><span class="fn">await</span> page.<span class="fn">locator</span>(<span class="sel">'[placeholder="Email"]'</span>)</div>
-      <div class="code-line">&nbsp;&nbsp;.<span class="fn">fill</span>(<span class="str">'user@example.com'</span>);</div>
-      <div class="code-line"><span class="fn">await</span> page.<span class="fn">locator</span>(<span class="sel">'[aria-label="Submit"]'</span>).<span class="fn">click</span>();</div>
-      <div class="code-line"><span class="fn">await</span> page.<span class="fn">locator</span>(<span class="sel">'text="Dashboard"'</span>).<span class="fn">click</span>();</div>
+    <div class="term-body">
+      <div><span class="t-comment">// 1. Click Record in the extension popup</span></div>
+      <div style="margin-top:8px;"><span class="t-green">&#x25CF; Recording</span> <span class="t-dim">github.com/login</span></div>
+      <div style="margin-top:4px;"><span class="t-dim">  navigate</span> <span class="t-text">https://github.com/login</span></div>
+      <div><span class="t-dim">  click    </span> <span class="t-amber">[data-testid="username"]</span> <span class="t-dim">&rarr; text="Username or email"</span></div>
+      <div><span class="t-dim">  fill     </span> <span class="t-amber">[placeholder="Username or email"]</span></div>
+      <div><span class="t-dim">  click    </span> <span class="t-amber">text="Sign in"</span> <span class="t-dim">&rarr; [aria-label="Sign in"]</span></div>
+      <div style="margin-top:8px;"><span class="t-dim">// 2. Click Stop, then Export As Playwright</span></div>
+      <div style="margin-top:4px;"><span class="t-green">&#x2713;</span> <span class="t-text">Exported</span> <span class="t-amber">login-flow.spec.ts</span> <span class="t-dim">(3 actions, 4 selector strategies)</span></div>
     </div>
   </div>
-</section>
+</div>
 
-<section class="why">
-  <h2>Why not Playwright Codegen?</h2>
-  <p>Playwright's recorder outputs brittle CSS selectors that break when the UI changes. RecStitch ranks selectors by resilience.</p>
-  <table>
-    <tr>
-      <th>Strategy</th>
-      <th>Example</th>
-      <th>Resilience</th>
-    </tr>
-    <tr>
-      <td>test-id</td>
-      <td>[data-testid="submit-btn"]</td>
-      <td class="high">Highest</td>
-    </tr>
-    <tr>
-      <td>text</td>
-      <td>text="Sign In"</td>
-      <td class="high">High</td>
-    </tr>
-    <tr>
-      <td>aria</td>
-      <td>[aria-label="Submit"]</td>
-      <td class="high">High</td>
-    </tr>
-    <tr>
-      <td>css</td>
-      <td>button.btn-primary.submit</td>
-      <td class="low">Low (brittle)</td>
-    </tr>
-  </table>
-</section>
-
-<section class="formats">
-  <div class="fmt-card">
-    <div class="fmt-tag">TypeScript</div>
-    <h3>Playwright</h3>
-    <p>Standard Playwright test format. Run with <code>npx playwright test</code>.</p>
+<div class="exports-wrap">
+  <div class="section-heading">Export Formats</div>
+  <p class="section-sub">One recording, three frameworks. Pick what fits your stack.</p>
+  <div class="export-tabs">
+    <div class="tab active" onclick="showTab('playwright')">Playwright</div>
+    <div class="tab" onclick="showTab('stagehand')">Stagehand</div>
+    <div class="tab" onclick="showTab('browser-use')">Browser Use</div>
   </div>
-  <div class="fmt-card">
-    <div class="fmt-tag">TypeScript</div>
-    <h3>Stagehand</h3>
-    <p>Natural language actions via Browserbase. Uses <code>act()</code> and <code>extract()</code>.</p>
+  <div id="tab-playwright" class="tab-content active">
+    <div class="code-block"><span class="kw">import</span> { <span class="type">test</span> } <span class="kw">from</span> <span class="str">'@playwright/test'</span>;
+
+<span class="fn">test</span>(<span class="str">'recorded flow'</span>, <span class="kw">async</span> ({ page }) =&gt; {
+  <span class="kw">await</span> page.<span class="fn">goto</span>(<span class="str">'https://github.com/login'</span>);
+  <span class="cm">// RecStitch uses best available selector, falls back in order</span>
+  <span class="kw">await</span> page.<span class="fn">locator</span>(<span class="str">'[data-testid="username"]'</span>).<span class="fn">fill</span>(<span class="str">'user@example.com'</span>);
+  <span class="kw">await</span> page.<span class="fn">locator</span>(<span class="str">'text="Sign in"'</span>).<span class="fn">click</span>();
+});</div>
   </div>
-  <div class="fmt-card">
-    <div class="fmt-tag">Python</div>
-    <h3>Browser Use</h3>
-    <p>LangChain-based browser agent. Runs with any OpenAI-compatible LLM.</p>
+  <div id="tab-stagehand" class="tab-content">
+    <div class="code-block"><span class="kw">import</span> { <span class="type">Stagehand</span> } <span class="kw">from</span> <span class="str">'@browserbasehq/stagehand'</span>;
+
+<span class="kw">async function</span> <span class="fn">main</span>() {
+  <span class="kw">const</span> stagehand = <span class="kw">new</span> <span class="type">Stagehand</span>();
+  <span class="kw">await</span> stagehand.<span class="fn">init</span>();
+  <span class="cm">// Natural language actions generated from your recording</span>
+  <span class="kw">await</span> stagehand.<span class="fn">act</span>(<span class="str">'Navigate to GitHub login page'</span>);
+  <span class="kw">await</span> stagehand.<span class="fn">act</span>(<span class="str">'Fill in "user@example.com" into the username field'</span>);
+  <span class="kw">await</span> stagehand.<span class="fn">act</span>(<span class="str">'Click the Sign in button'</span>);
+}</div>
   </div>
+  <div id="tab-browser-use" class="tab-content">
+    <div class="code-block"><span class="kw">from</span> browser_use <span class="kw">import</span> <span class="type">Agent</span>
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="type">ChatOpenAI</span>
+
+<span class="cm"># RecStitch generates a task description from your recorded actions</span>
+agent = <span class="type">Agent</span>(
+    task=<span class="str">"Go to github.com/login, fill in 'user@example.com' as username, click Sign in"</span>,
+    llm=<span class="type">ChatOpenAI</span>(model=<span class="str">"gpt-4o"</span>),
+)
+
+<span class="kw">await</span> agent.<span class="fn">run</span>()</div>
+  </div>
+</div>
+
+<section class="features">
+  <div class="card"><div class="card-icon">&#x1F9F5;</div><h3>Resilient Selectors</h3><p>Generates test-id, text, ARIA, and CSS selectors ranked by resilience. Uses the strongest available &mdash; falls back automatically.</p></div>
+  <div class="card"><div class="card-icon">&#x1F3AC;</div><h3>Visual Feedback</h3><p>Green highlight on every recorded element. Live recording badge so you always know the extension is active.</p></div>
+  <div class="card"><div class="card-icon">&#x2702;&#xFE0F;</div><h3>Edit Before Export</h3><p>Delete individual actions from the popup before exporting. Clean up mis-clicks without re-recording.</p></div>
+  <div class="card"><div class="card-icon">&#x1F4E4;</div><h3>3 Export Formats</h3><p>Playwright TypeScript, Stagehand, and Browser Use Python. Plus raw JSON for custom processing.</p></div>
 </section>
 
-<section class="cta">
-  <a href="https://github.com/m4cd4r4/recstitch" class="btn btn-primary">Install from GitHub</a>
-  <a href="https://github.com/m4cd4r4/recstitch#readme" class="btn btn-ghost">Read the docs</a>
-</section>
+<div class="install-wrap">
+  <div class="section-heading">Install</div>
+  <p class="section-sub">Load as an unpacked extension in Chrome or any Chromium browser.</p>
+  <div class="install-steps">
+    <div class="step"><div class="step-num">STEP 01</div><h4>Clone &amp; Build</h4><p><code>git clone github.com/m4cd4r4/recstitch</code><br>then <code>npm install &amp;&amp; npm run build</code></p></div>
+    <div class="step"><div class="step-num">STEP 02</div><h4>Load in Chrome</h4><p>Go to <code>chrome://extensions</code>, enable Developer Mode, click Load Unpacked, select the <code>dist/</code> folder.</p></div>
+    <div class="step"><div class="step-num">STEP 03</div><h4>Record</h4><p>Click the RecStitch icon, hit Record, use the site normally, then Stop and export.</p></div>
+  </div>
+</div>
 
-<footer>
-  recstitch — MIT License · Built by <a href="https://github.com/m4cd4r4" style="color:var(--green);text-decoration:none;">m4cd4r4</a>
-</footer>
+<footer>RecStitch &mdash; MIT License &middot; Built by <a href="https://github.com/m4cd4r4" style="color:var(--green);text-decoration:none;">m4cd4r4</a></footer>
 
+<script>
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+  event.target.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+</script>
 </body>
 </html>
