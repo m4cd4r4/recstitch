@@ -1,8 +1,8 @@
-# AgentTrace
+# RecStitch
 
-**Live:** https://agent-trace-sage.vercel.app
+**Live:** https://recstitch-sage.vercel.app
 
-![AgentTrace landing page](docs/screenshot.png)
+![RecStitch landing page](docs/screenshot.png)
 
 Record your browser actions. Export an AI-resilient automation script.
 
@@ -14,7 +14,7 @@ Record your browser actions. Export an AI-resilient automation script.
 
 ## Why Not Playwright Codegen?
 
-Playwright's recorder outputs brittle CSS selectors that break when the UI changes. AgentTrace generates **multiple selector strategies** ranked by resilience:
+Playwright's recorder outputs brittle CSS selectors that break when the UI changes. RecStitch generates **multiple selector strategies** ranked by resilience:
 
 | Strategy | Example | Resilience |
 |----------|---------|------------|
@@ -74,8 +74,8 @@ agent = Agent(
 ## Development
 
 ```bash
-git clone https://github.com/m4cd4r4/agent-trace
-cd agent-trace
+git clone https://github.com/m4cd4r4/recstitch
+cd recstitch
 npm install
 npm run build
 ```
