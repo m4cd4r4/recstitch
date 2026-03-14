@@ -110,7 +110,7 @@ extension/
 
 ```mermaid
 %%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#0f172a', 'primaryTextColor': '#e2e8f0', 'primaryBorderColor': '#14b8a6', 'lineColor': '#14b8a6'}}}%%
-flowchart LR
+flowchart TD
     classDef ext     fill:#0f1f3d,stroke:#3b82f6,color:#93c5fd,font-weight:bold
     classDef capture fill:#0c1a2e,stroke:#6366f1,color:#a5b4fc
     classDef sel     fill:#0a2520,stroke:#14b8a6,color:#5eead4,font-weight:bold
@@ -120,12 +120,14 @@ flowchart LR
     Record(["▶ Click Record\nChrome Extension"]):::ext
 
     subgraph CAPTURE["Content Script — injected into page"]
+        direction LR
         Click["click events"]:::capture
         Input["input / fill\nfinal value only"]:::capture
         Nav["navigation\npage transitions"]:::capture
     end
 
     subgraph SELECTOR["Multi-Strategy Selector — ranked by resilience"]
+        direction LR
         S1["test-id  data-testid=  →  Highest"]:::sel
         S2["text  text='Sign In'  →  High"]:::sel
         S3["aria  aria-label=  →  High"]:::sel
@@ -135,6 +137,7 @@ flowchart LR
     SW["Service Worker\nstate · storage\nmessaging"]:::worker
 
     subgraph EXPORT["Export Formats"]
+        direction LR
         PW["Playwright\nTypeScript"]:::export
         SH["Stagehand\nTypeScript"]:::export
         BU["Browser Use\nPython"]:::export
