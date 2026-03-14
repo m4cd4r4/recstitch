@@ -106,6 +106,47 @@ extension/
     export-browser-use.ts # Browser Use Python generator
 ```
 
+## How It Works
+
+```mermaid
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#0f172a', 'primaryTextColor': '#e2e8f0', 'primaryBorderColor': '#14b8a6', 'lineColor': '#14b8a6'}}}%%
+flowchart LR
+    classDef ext     fill:#0f1f3d,stroke:#3b82f6,color:#93c5fd,font-weight:bold
+    classDef capture fill:#0c1a2e,stroke:#6366f1,color:#a5b4fc
+    classDef sel     fill:#0a2520,stroke:#14b8a6,color:#5eead4,font-weight:bold
+    classDef worker  fill:#1a1030,stroke:#8b5cf6,color:#c4b5fd
+    classDef export  fill:#1c1400,stroke:#f59e0b,color:#fcd34d,font-weight:bold
+
+    Record(["▶ Click Record\nChrome Extension"]):::ext
+
+    subgraph CAPTURE["Content Script — injected into page"]
+        Click["click events"]:::capture
+        Input["input / fill\nfinal value only"]:::capture
+        Nav["navigation\npage transitions"]:::capture
+    end
+
+    subgraph SELECTOR["Multi-Strategy Selector — ranked by resilience"]
+        S1["test-id  data-testid=  →  Highest"]:::sel
+        S2["text  text='Sign In'  →  High"]:::sel
+        S3["aria  aria-label=  →  High"]:::sel
+        S4["css  button.btn  →  Low"]:::sel
+    end
+
+    SW["Service Worker\nstate · storage\nmessaging"]:::worker
+
+    subgraph EXPORT["Export Formats"]
+        PW["Playwright\nTypeScript"]:::export
+        SH["Stagehand\nTypeScript"]:::export
+        BU["Browser Use\nPython"]:::export
+        JSON["JSON\nraw recording"]:::export
+    end
+
+    Record --> CAPTURE
+    Click & Input & Nav --> SELECTOR
+    SELECTOR --> SW
+    SW --> PW & SH & BU & JSON
+```
+
 ## License
 
 MIT
